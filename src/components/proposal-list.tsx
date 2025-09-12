@@ -18,9 +18,16 @@ export function ProposalList() {
     try {
       const response = await fetch("/api/proposals");
       const data = await response.json();
-      setProposals(data);
+      
+      if (response.ok && Array.isArray(data)) {
+        setProposals(data);
+      } else {
+        console.error("API error:", data);
+        setProposals([]);
+      }
     } catch (error) {
       console.error("Error fetching proposals:", error);
+      setProposals([]);
     } finally {
       setLoading(false);
     }
@@ -30,19 +37,22 @@ export function ProposalList() {
     return <div className="text-center py-8">Loading proposals...</div>;
   }
 
-  if (proposals.length === 0) {
+  // Additional safety check before rendering
+  const safeProposals = Array.isArray(proposals) ? proposals : [];
+  
+  if (safeProposals.length === 0) {
     return (
       <div className="text-center py-8 text-gray-600">
         No proposals yet. Be the first to submit one!
       </div>
     );
   }
-
+  
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Active Proposals</h2>
       <div className="grid gap-6">
-        {proposals.map((proposal) => (
+        {safeProposals.map((proposal) => (
           <div key={proposal.id} className="bg-white p-6 rounded-lg border">
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">

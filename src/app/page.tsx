@@ -1,6 +1,7 @@
 import { Topbar } from "@/components/topbar";
 import { ProposalForm } from "@/components/proposal-form";
 import { ProposalList } from "@/components/proposal-list";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export default function Home() {
   return (
@@ -19,7 +20,9 @@ export default function Home() {
           </div>
           
           <div className="lg:col-span-2">
-            <ProposalList />
+            <ErrorBoundary>
+              <ProposalList />
+            </ErrorBoundary>
           </div>
         </div>
       </div>
