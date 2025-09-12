@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createPledge, verifyPledge } from "@/lib/db";
-import { createPublicClient, http, getTransactionReceipt } from "viem";
+import { createPublicClient, http } from "viem";
 import { base } from "viem/chains";
 
 const CreatePledgeSchema = z.object({
@@ -12,7 +12,6 @@ const CreatePledgeSchema = z.object({
 });
 
 const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-const SAFE_ADDRESS = process.env.SAFE_ADDRESS || "0x"; // Set in env vars
 
 const client = createPublicClient({
   chain: base,
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
     const data = CreatePledgeSchema.parse(body);
     
     // Verify the transaction on-chain
-    const receipt = await getTransactionReceipt(client, {
+    const receipt = await client.getTransactionReceipt({
       hash: data.tx_hash as `0x${string}`
     });
     

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import Image from "next/image";
 import { PledgeButton } from "./pledge-button";
 import type { Proposal } from "@/lib/db";
 
@@ -48,9 +49,11 @@ export function ProposalList() {
                 <h3 className="text-xl font-semibold mb-2">{proposal.title}</h3>
                 <p className="text-gray-600 mb-4">{proposal.description}</p>
                 {proposal.image && (
-                  <img 
+                  <Image 
                     src={proposal.image} 
                     alt={proposal.title}
+                    width={384}
+                    height={192}
                     className="w-full max-w-md h-48 object-cover rounded-md mb-4"
                   />
                 )}

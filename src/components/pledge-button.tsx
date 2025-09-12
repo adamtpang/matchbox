@@ -25,11 +25,11 @@ interface PledgeButtonProps {
   onPledgeComplete: () => void;
 }
 
-export function PledgeButton({ proposalId, requestedAmount, onPledgeComplete }: PledgeButtonProps) {
+export function PledgeButton({ onPledgeComplete }: PledgeButtonProps) {
   const { address } = useAccount();
   const [pledgeAmount, setPledgeAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { writeContract, isPending, isSuccess, error } = useWriteContract();
+  const { writeContract, isPending } = useWriteContract();
 
   const handlePledge = async () => {
     if (!pledgeAmount || !address) return;
@@ -44,7 +44,7 @@ export function PledgeButton({ proposalId, requestedAmount, onPledgeComplete }: 
     
     try {
       // Execute USDC transfer
-      const result = await writeContract({
+      await writeContract({
         address: USDC_ADDRESS,
         abi: USDC_ABI,
         functionName: "transfer",

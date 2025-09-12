@@ -1,5 +1,5 @@
 "use client";
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { WagmiProvider, http } from "wagmi";
 import { base } from "wagmi/chains";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -8,12 +8,12 @@ import { useState } from "react";
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "demo-project-id";
 
-const config = createConfig(getDefaultConfig({
+const config = getDefaultConfig({
   appName: "NS Crowdfund",
   projectId,
   chains: [base],
   transports: { [base.id]: http() },
-}));
+});
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
