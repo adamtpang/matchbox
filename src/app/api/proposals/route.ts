@@ -11,14 +11,26 @@ const CreateProposalSchema = z.object({
 });
 
 export async function GET() {
+  console.log("🔍 API: GET /api/proposals called");
+  
   try {
-    console.log("API: Attempting to fetch proposals...");
+    console.log("📡 API: Attempting to connect to database...");
     const proposals = await listProposals();
-    console.log("API: Successfully fetched", proposals.length, "proposals");
-    return NextResponse.json(proposals);
+    console.log("✅ API: Successfully fetched", proposals.length, "proposals");
+    
+    // Ensure we always return an array
+    const safeProposals = Array.isArray(proposals) ? proposals : [];
+    console.log("📦 API: Returning", safeProposals.length, "proposals");
+    
+    return NextResponse.json(safeProposals);
   } catch (error) {
-    console.error("API Error fetching proposals:", error);
-    // Return fallback data instead of error to prevent crashes
+    console.error("❌ API Error fetching proposals:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      error
+    });
+    
+    // Return fallback data as array to prevent map() errors
     const fallbackProposals = [
       {
         id: 1,
@@ -45,8 +57,11 @@ export async function GET() {
         created_at: new Date().toISOString()
       }
     ];
-    console.log("API: Returning fallback data");
-    return NextResponse.json(fallbackProposals);
+    console.log("⚠️  API: Returning", fallbackProposals.length, "fallback proposals");
+    return NextResponse.json(fallbackProposals, { 
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 

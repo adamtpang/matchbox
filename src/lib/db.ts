@@ -44,6 +44,14 @@ export async function createProposal(p: {
 }
 
 export async function listProposals(): Promise<Proposal[]> {
+  console.log("📊 DB: listProposals() called");
+  
+  // Check if database is configured
+  if (!process.env.POSTGRES_URL) {
+    console.log("⚠️  DB: No POSTGRES_URL found, returning fallback data");
+    return getFallbackProposals();
+  }
+  
   try {
     await sql`CREATE TABLE IF NOT EXISTS proposals(
       id serial primary key,
@@ -70,35 +78,42 @@ export async function listProposals(): Promise<Proposal[]> {
     
     return rows as Proposal[];
   } catch (error) {
-    console.error('Database error:', error);
-    // Return demo data if database fails
-    return [
-      {
-        id: 1,
-        title: 'Build Community Garden',
-        description: 'Create a sustainable garden space for the local community to grow vegetables and learn about sustainable farming.',
-        cost: 5000,
-        image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 2,
-        title: 'Free Coding Bootcamp',
-        description: 'Provide free coding education to underserved communities, focusing on practical skills for web development.',
-        cost: 15000,
-        image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 3,
-        title: 'Solar Panel Installation',
-        description: 'Install solar panels on community center to reduce energy costs and promote renewable energy.',
-        cost: 25000,
-        image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400',
-        created_at: new Date().toISOString()
-      }
-    ] as Proposal[];
+    console.error('❌ DB: Database error:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    return getFallbackProposals();
   }
+}
+
+function getFallbackProposals(): Proposal[] {
+  console.log("📦 DB: Returning fallback proposal data");
+  return [
+    {
+      id: 1,
+      title: 'NS Community: Folding Tables',
+      description: 'Purchase 10 folding tables for NS events, workshops, and community gatherings. High-quality, portable tables that can be used for years.',
+      cost: 500,
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 2,
+      title: 'NS Community: Art Easels',
+      description: 'Art easels for NS creative workshops, painting sessions, and design thinking activities. Support the artistic side of our community.',
+      cost: 300,
+      image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 3,
+      title: 'NS Community: Drum Kit',
+      description: 'Complete drum kit for music sessions, team building, and creative expression. Bring rhythm to our space.',
+      cost: 800,
+      image: 'https://images.unsplash.com/photo-1571327073757-71d13c24de30?w=400',
+      created_at: new Date().toISOString()
+    }
+  ] as Proposal[];
 }
 
 export async function getProposal(id: number): Promise<Proposal | null> {
