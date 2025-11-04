@@ -8,20 +8,24 @@ import { useState } from "react";
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID;
 
+// Only warn once in development about missing project ID
+if (typeof window === 'undefined' && !projectId) {
+  console.warn(
+    "⚠️  WalletConnect project ID not configured. " +
+    "Get a free project ID from https://cloud.walletconnect.com for production use."
+  );
+}
+
 const config = getDefaultConfig({
   appName: "NS Crowdfund",
-  projectId: projectId || "placeholder-id", // Use placeholder instead of demo
+  projectId: projectId || "placeholder-id",
   chains: [base],
   transports: { [base.id]: http() },
-  ssr: true, // Add SSR support
+  ssr: true,
 });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
-
-  if (!projectId) {
-    console.warn("WalletConnect project ID not configured. Some wallet features may not work properly.");
-  }
 
   return (
     <WagmiProvider config={config}>

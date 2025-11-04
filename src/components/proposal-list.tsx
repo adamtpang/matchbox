@@ -17,12 +17,26 @@ export function ProposalList() {
   const fetchProposals = async () => {
     try {
       const response = await fetch("/api/proposals");
+
+      if (!response.ok) {
+        console.error("API error - non-OK status:", response.status, response.statusText);
+        setProposals([]);
+        return;
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("API error - non-JSON response, content-type:", contentType);
+        setProposals([]);
+        return;
+      }
+
       const data = await response.json();
-      
-      if (response.ok && Array.isArray(data)) {
+
+      if (Array.isArray(data)) {
         setProposals(data);
       } else {
-        console.error("API error:", data);
+        console.error("API error - data is not an array:", typeof data, data);
         setProposals([]);
       }
     } catch (error) {
